@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Receptionist — Бизнес-план</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --card: #12121a;
+    --card-hover: #1a1a2e;
+    --accent: #6c5ce7;
+    --accent2: #00cec9;
+    --green: #00b894;
+    --red: #d63031;
+    --yellow: #fdcb6e;
+    --text: #e0e0e0;
+    --text-muted: #888;
+    --border: #2d2d44;
+    --gradient1: linear-gradient(135deg, #6c5ce7, #a29bfe);
+    --gradient2: linear-gradient(135deg, #00cec9, #55efc4);
+    --gradient3: linear-gradient(135deg, #fd79a8, #e84393);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+  /* Hero */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(circle at 30% 40%, rgba(108,92,231,0.15) 0%, transparent 50%),
+                radial-gradient(circle at 70% 60%, rgba(0,206,201,0.1) 0%, transparent 50%);
+    animation: pulse 8s ease-in-out infinite alternate;
+  }
+  @keyframes pulse {
+    0% { transform: scale(1) rotate(0deg); }
+    100% { transform: scale(1.05) rotate(2deg); }
+  }
+  .hero-content { position: relative; z-index: 1; }
+  .hero h1 {
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    font-weight: 800;
+    background: var(--gradient1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+  }
+  .hero .subtitle {
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    color: var(--text-muted);
+    max-width: 700px;
+    margin: 0 auto 40px;
+  }
+  .verdict-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(0,184,148,0.15);
+    border: 1px solid rgba(0,184,148,0.3);
+    border-radius: 50px;
+    padding: 12px 32px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--green);
+    margin-bottom: 24px;
+  }
+  .score {
+    font-size: 4rem;
+    font-weight: 900;
+    background: var(--gradient2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 16px 0;
+  }
+  .score span { font-size: 1.5rem; opacity: 0.6; }
+
+  /* Sections */
+  section { padding: 80px 0; }
+  .section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .section-subtitle {
+    color: var(--text-muted);
+    margin-bottom: 40px;
+    font-size: 1.05rem;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    transition: all 0.3s;
+  }
+  .card:hover { border-color: var(--accent); background: var(--card-hover); }
+
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+
+  /* Metric cards */
+  .metric { text-align: center; padding: 32px 20px; }
+  .metric-value {
+    font-size: 2.4rem;
+    font-weight: 800;
+    background: var(--gradient1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .metric-value.green {
+    background: var(--gradient2);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+  .metric-label {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-top: 8px;
+  }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+  }
+  th {
+    text-align: left;
+    padding: 12px 16px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(45,45,68,0.5);
+    font-size: 0.95rem;
+  }
+  tr:hover td { background: rgba(108,92,231,0.05); }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+  td.green { color: var(--green); }
+  td.accent { color: var(--accent); }
+  .highlight-row td { background: rgba(108,92,231,0.1); font-weight: 700; }
+
+  /* Problem/Solution */
+  .problem-card {
+    background: linear-gradient(135deg, rgba(214,48,49,0.1), rgba(214,48,49,0.02));
+    border-color: rgba(214,48,49,0.2);
+  }
+  .solution-card {
+    background: linear-gradient(135deg, rgba(0,184,148,0.1), rgba(0,184,148,0.02));
+    border-color: rgba(0,184,148,0.2);
+  }
+  .card-icon { font-size: 2rem; margin-bottom: 12px; }
+  .card h3 { font-size: 1.15rem; margin-bottom: 8px; }
+  .card p { color: var(--text-muted); font-size: 0.95rem; }
+
+  /* Competition */
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .badge-weak { background: rgba(0,184,148,0.15); color: var(--green); }
+  .badge-mid { background: rgba(253,203,110,0.15); color: var(--yellow); }
+  .badge-strong { background: rgba(214,48,49,0.15); color: var(--red); }
+
+  /* Charts */
+  .chart-container {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin: 20px 0;
+  }
+  .chart-container canvas { max-height: 350px; }
+
+  /* Timeline */
+  .timeline { position: relative; padding-left: 32px; }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 11px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--border);
+  }
+  .timeline-item {
+    position: relative;
+    margin-bottom: 32px;
+  }
+  .timeline-dot {
+    position: absolute;
+    left: -32px;
+    top: 4px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 3px solid var(--bg);
+    z-index: 1;
+  }
+  .timeline-dot.green { background: var(--green); }
+  .timeline-item h4 { font-size: 1.05rem; margin-bottom: 4px; }
+  .timeline-item p { color: var(--text-muted); font-size: 0.9rem; }
+  .timeline-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-top: 6px;
+  }
+  .tb-cost { background: rgba(108,92,231,0.15); color: var(--accent); }
+  .tb-time { background: rgba(0,206,201,0.15); color: var(--accent2); }
+
+  /* Verdict box */
+  .verdict-box {
+    background: linear-gradient(135deg, rgba(0,184,148,0.1), rgba(108,92,231,0.1));
+    border: 2px solid rgba(0,184,148,0.3);
+    border-radius: 20px;
+    padding: 48px;
+    text-align: center;
+  }
+  .verdict-box h2 {
+    font-size: 2.4rem;
+    background: var(--gradient2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Footer */
+  footer {
+    padding: 40px 0;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    border-top: 1px solid var(--border);
+  }
+
+  /* Scroll animations */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.6s ease-out;
+  }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    section { padding: 48px 0; }
+    .verdict-box { padding: 32px 20px; }
+    table { font-size: 0.85rem; }
+    th, td { padding: 8px 10px; }
+  }
+
+  /* Divider */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 0;
+  }
+
+  /* Tags */
+  .tag {
+    display: inline-block;
+    padding: 4px 12px;
+    background: rgba(108,92,231,0.12);
+    border-radius: 20px;
+    font-size: 0.8rem;
+    color: var(--accent);
+    margin: 3px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ========== HERO ========== -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="verdict-badge">ДЕЛАТЬ</div>
+    <h1>AI Receptionist</h1>
+    <p class="subtitle">Omnichannel AI-рецепционист для соло-мастеров. Любая ниша, любая страна, любой канал связи. Отвечает клиентам пока мастер занят работой.</p>
+    <div class="score">72<span>/100</span></div>
+    <p style="color:var(--text-muted);font-size:0.9rem;">Score валидации — Совет из 4 флагманских AI моделей + Deep Research</p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ========== PROBLEM / SOLUTION ========== -->
+<section>
+  <div class="container">
+    <div class="grid-2 fade-in">
+      <div class="card problem-card">
+        <div class="card-icon">&#x1F6A8;</div>
+        <h3>Проблема</h3>
+        <p>435 миллионов соло-мастеров глобально теряют клиентов каждый день — потому что не могут ответить на сообщения пока работают руками. Неважно канал: WhatsApp, Instagram, SMS, Telegram, звонок. <strong>Руки заняты → клиент ушёл к конкуренту.</strong></p>
+        <p style="margin-top:12px;color:var(--red);font-weight:600;">60% мастеров жалуются на ручной чат. Smith.ai: +47% записей через AI.</p>
+      </div>
+      <div class="card solution-card">
+        <div class="card-icon">&#x1F916;</div>
+        <h3>Решение</h3>
+        <p><strong>AI-рецепционист</strong> подключается к любым каналам связи мастера: ведёт человеческий диалог, записывает клиентов, напоминает о визитах, реактивирует спящую базу, делает follow-up звонки.</p>
+        <p style="margin-top:12px;color:var(--green);font-weight:600;">«У вас теперь есть секретарь за $29/мес вместо $2 000/мес»</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== KEY METRICS ========== -->
+<section style="padding-top:0">
+  <div class="container">
+    <div class="grid-4 fade-in">
+      <div class="card metric">
+        <div class="metric-value">$582B</div>
+        <div class="metric-label">TAM глобальный gig-рынок<br>435M воркеров</div>
+      </div>
+      <div class="card metric">
+        <div class="metric-value">80M</div>
+        <div class="metric-label">SAM — сервисные мастера<br>с записью клиентов</div>
+      </div>
+      <div class="card metric">
+        <div class="metric-value green">$29</div>
+        <div class="metric-label">ARPU в месяц<br>маржа 80-90%</div>
+      </div>
+      <div class="card metric">
+        <div class="metric-value green">2-5</div>
+        <div class="metric-label">часов/неделю<br>время основателя</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ========== NICHES ========== -->
+<section>
+  <div class="container fade-in">
+    <h2 class="section-title">Целевые ниши</h2>
+    <p class="section-subtitle">Не привязаны к одной нише — продукт для ЛЮБЫХ мастеров с записью</p>
+    <div class="grid-3">
+      <div class="card">
+        <h3 style="color:var(--accent)">Tier 1 — Идеальный ICP</h3>
+        <p style="margin:8px 0;font-size:0.9rem;color:var(--text-muted)">Высокая боль + высокий WTP + частые визиты</p>
+        <div>
+          <span class="tag">Маникюр 2-3M</span>
+          <span class="tag">Парикмахеры 5-7M</span>
+          <span class="tag">Ресницы/брови 1-2M</span>
+          <span class="tag">Массажисты 1-2M</span>
+          <span class="tag">Тренеры 3-5M</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3 style="color:var(--accent2)">Tier 2 — Хороший ICP</h3>
+        <p style="margin:8px 0;font-size:0.9rem;color:var(--text-muted)">Средняя боль, но готовы платить</p>
+        <div>
+          <span class="tag">Репетиторы 10-15M</span>
+          <span class="tag">Грумеры 0.5-1M</span>
+          <span class="tag">Тату 0.5-1M</span>
+          <span class="tag">Фотографы 2-3M</span>
+          <span class="tag">Клининг 3-5M</span>
+          <span class="tag">Автодетейлинг 0.5-1M</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3 style="color:var(--yellow)">Tier 3 — Экспериментальный</h3>
+        <p style="margin:8px 0;font-size:0.9rem;color:var(--text-muted)">Нестандартный ICP, но высокий потенциал</p>
+        <div>
+          <span class="tag">Сантехники/электрики</span>
+          <span class="tag">Частные врачи $50-150</span>
+          <span class="tag">Свадебные организаторы</span>
+          <span class="tag">Риелторы</span>
+          <span class="tag">IT-фрилансеры</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ========== CHANNELS ========== -->
+<section>
+  <div class="container fade-in">
+    <h2 class="section-title">Каналы связи — Omnichannel</h2>
+    <p class="section-subtitle">Не привязаны к одному каналу. Архитектура channel-agnostic с первого дня.</p>
+    <div class="card" style="overflow-x:auto;">
+      <table>
+        <tr><th>Канал</th><th>Пользователей</th><th>Рынки</th><th>Стоимость</th></tr>
+        <tr><td><strong>WhatsApp</strong></td><td>2B+</td><td>LATAM, Индия, EU, Африка</td><td class="num">$0.005-0.08/msg</td></tr>
+        <tr><td><strong>SMS</strong></td><td>Универсальный</td><td>US, Канада, Австралия</td><td class="num">$0.0075/msg</td></tr>
+        <tr><td><strong>Instagram DM</strong></td><td>2B+</td><td>Глобально (beauty)</td><td class="num">Бесплатно</td></tr>
+        <tr><td><strong>Telegram</strong></td><td>900M+</td><td>Россия/СНГ, Иран, SEA</td><td class="num">Бесплатно</td></tr>
+        <tr><td><strong>AI Voice (звонки)</strong></td><td>Универсальный</td><td>Везде</td><td class="num">$0.05-0.15/мин</td></tr>
+        <tr><td><strong>Facebook Messenger</strong></td><td>1.3B</td><td>US, EU, SEA</td><td class="num">Бесплатно</td></tr>
+        <tr><td><strong>Email</strong></td><td>Универсальный</td><td>B2B, старшая аудитория</td><td class="num">$0.001/email</td></tr>
+        <tr><td><strong>Web-чат</strong></td><td>Универсальный</td><td>Все с сайтом</td><td class="num">Бесплатно</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ========== COMPETITION ========== -->
+<section>
+  <div class="container fade-in">
+    <h2 class="section-title">Конкуренция</h2>
+    <p class="section-subtitle">Все конкуренты фрагментированы. Никто не делает omnichannel AI для ЛЮБЫХ мастеров.</p>
+    <div class="card" style="overflow-x:auto;">
+      <table>
+        <tr><th>Конкурент</th><th>Ниша</th><th>Каналы</th><th>AI</th><th>Цена</th><th>Слабость</th></tr>
+        <tr><td><strong>GlossGenius</strong></td><td>Только beauty</td><td>App, SMS</td><td><span class="comp-badge badge-mid">Базовый</span></td><td class="num">$24-300</td><td>Нет мессенджеров</td></tr>
+        <tr><td><strong>Vagaro</strong></td><td>Beauty + wellness</td><td>App, SMS, email</td><td><span class="comp-badge badge-mid">Smart sched</span></td><td class="num">$25-199</td><td>Нет AI-диалога</td></tr>
+        <tr><td><strong>Booksy</strong></td><td>Только beauty</td><td>App, SMS, WA</td><td><span class="comp-badge badge-mid">AI booking</span></td><td class="num">Sub + per-lead</td><td>Только beauty</td></tr>
+        <tr><td><strong>Glowup AI</strong> <span style="color:var(--yellow);font-size:0.75rem">YC W25</span></td><td>Только beauty</td><td>IG, SMS</td><td><span class="comp-badge badge-strong">Full AI</span></td><td class="num">$49</td><td>Только beauty + US</td></tr>
+        <tr><td><strong>Smith.ai</strong></td><td>Любой SMB</td><td>Телефон, чат</td><td><span class="comp-badge badge-strong">AI + human</span></td><td class="num">$140+</td><td>Дорого, enterprise</td></tr>
+        <tr><td><strong>DIKIDI</strong></td><td>Beauty</td><td>Telegram, app</td><td><span class="comp-badge badge-weak">Слабый</span></td><td class="num">$7</td><td>Только РФ</td></tr>
+        <tr class="highlight-row"><td><strong>Наш продукт</strong></td><td><strong>Любая ниша</strong></td><td><strong>Все каналы</strong></td><td><span class="comp-badge badge-strong">Full AI</span></td><td class="num"><strong>$19-79</strong></td><td><strong>Строим moat</strong></td></tr>
+      </table>
+    </div>
+    <div class="grid-2" style="margin-top:24px;">
+      <div class="card" style="border-color:rgba(0,184,148,0.3)">
+        <h3 style="color:var(--green)">Незанятая позиция (подтверждено)</h3>
+        <ul style="list-style:none;margin-top:12px;font-size:0.9rem;">
+          <li>&#x2705; Omnichannel (WhatsApp + IG + SMS + Telegram + звонки + web)</li>
+          <li>&#x2705; Любая ниша (не только beauty)</li>
+          <li>&#x2705; Stateful AI-агент (помнит историю диалога)</li>
+          <li>&#x2705; AI Voice (звонки для подтверждения)</li>
+          <li>&#x2705; Распознавание голосовых сообщений</li>
+          <li>&#x2705; Онбординг за 15 минут</li>
+          <li>&#x2705; Реактивация спящих клиентов</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>$300M+ инвестиций в beauty AI (2024-25)</h3>
+        <p style="margin-top:12px;font-size:0.9rem;color:var(--text-muted)">Рынок подтверждён деньгами. GlossGenius — 500K+ клиентов при $48/мес. Vagaro — 150K+. Fresha — $200M+ funding. Booksy — $100M funding.</p>
+        <p style="margin-top:12px;font-size:0.9rem;color:var(--accent)">И это только beauty. Home services, education, wellness — ещё больше.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ========== UNIT ECONOMICS ========== -->
+<section>
+  <div class="container fade-in">
+    <h2 class="section-title">Юнит-экономика</h2>
+    <p class="section-subtitle">Экономика одного клиента. Реалистичный сценарий.</p>
+    <div class="grid-3">
+      <div class="card metric">
+        <div class="metric-value">$10</div>
+        <div class="metric-label">Стоимость привлечения<br>одного клиента (CAC)</div>
+      </div>
+      <div class="card metric">
+        <div class="metric-value green">$322</div>
+        <div class="metric-label">Пожизненная ценность<br>клиента (LTV)</div>
+      </div>
+      <div class="card metric">
+        <div class="metric-value green">32x</div>
+        <div class="metric-label">LTV / CAC<br>норма &gt; 3x</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:24px;overflow-x:auto;">
+      <table>
+        <tr><th>Метрика</th><th>Значение</th></tr>
+        <tr><td>Средний чек (ARPU)</td><td class="num accent">$29/мес</td></tr>
+        <tr><td>Себестоимость обслуживания</td><td class="num">$6/мес</td></tr>
+        <tr><td>Чистая прибыль с клиента</td><td class="num green">$23/мес</td></tr>
+        <tr><td>Средний срок жизни клиента (при оттоке 7%)</td><td class="num">~14 мес</td></tr>
+        <tr><td>Валовая маржа</td><td class="num green">79%</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ========== FINANCIAL FORECASTS ========== -->
+<section>
+  <div class="container">
+    <h2 class="section-title fade-in">Финансовые прогнозы</h2>
+    <p class="section-subtitle fade-in">Три сценария. Оценка на основе реалистичного (вероятность 60%). Модель: AI-команда на Claude Code — затраты на «команду» = $0.</p>
+
+    <!-- Revenue Chart -->
+    <div class="chart-container fade-in">
+      <h3 style="margin-bottom:16px;font-size:1rem;">Выручка в месяц (три сценария)</h3>
+      <canvas id="revenueChart"></canvas>
+      <p style="color:var(--text-muted);font-size:0.8rem;margin-top:8px;">Это ВЫРУЧКА — сколько денег приходит в месяц. Не прибыль.</p>
+    </div>
+
+    <!-- Profit Chart -->
+    <div class="chart-container fade-in">
+      <h3 style="margin-bottom:16px;font-size:1rem;">Чистая прибыль в месяц (модель AI-команды, расходы = только инфраструктура)</h3>
+      <canvas id="profitChart"></canvas>
+      <p style="color:var(--text-muted);font-size:0.8rem;margin-top:8px;">Прибыль = выручка минус расходы на инфраструктуру продукта. AI-команда работает на уже оплаченной подписке.</p>
+    </div>
+
+    <!-- Cumulative Profit Chart -->
+    <div class="chart-container fade-in">
+      <h3 style="margin-bottom:16px;font-size:1rem;">Накопительная прибыль (реалистичный сценарий)</h3>
+      <canvas id="cumulativeChart"></canvas>
+    </div>
+
+    <!-- Tables -->
+    <div class="grid-2 fade-in" style="margin-top:24px;">
+      <div class="card">
+        <h3 style="margin-bottom:12px;font-size:1rem;">Выручка за месяц</h3>
+        <table>
+          <tr><th>Период</th><th>Пессимист</th><th>Реалист</th><th>Оптимист</th></tr>
+          <tr><td>3 мес</td><td class="num">$646</td><td class="num accent">$1 653</td><td class="num">$3 705</td></tr>
+          <tr><td>6 мес</td><td class="num">$1 235</td><td class="num accent">$4 176</td><td class="num">$10 920</td></tr>
+          <tr><td>12 мес</td><td class="num">$2 470</td><td class="num accent">$12 000</td><td class="num">$37 050</td></tr>
+          <tr><td>18 мес</td><td class="num">$3 705</td><td class="num accent">$20 648</td><td class="num">$66 300</td></tr>
+          <tr><td>36 мес</td><td class="num">$6 650</td><td class="num accent">$49 300</td><td class="num">$175 500</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:12px;font-size:1rem;">Чистая прибыль за месяц (AI-модель)</h3>
+        <table>
+          <tr><th>Период</th><th>Пессимист</th><th>Реалист</th><th>Оптимист</th></tr>
+          <tr><td>3 мес</td><td class="num">$546</td><td class="num green">$1 581</td><td class="num">$3 505</td></tr>
+          <tr><td>6 мес</td><td class="num">$1 023</td><td class="num green">$3 964</td><td class="num">$10 700</td></tr>
+          <tr><td>12 мес</td><td class="num">$2 170</td><td class="num green">$11 278</td><td class="num">$35 050</td></tr>
+          <tr><td>18 мес</td><td class="num">$3 200</td><td class="num green">$19 148</td><td class="num">$63 800</td></tr>
+          <tr><td>36 мес</td><td class="num">$5 650</td><td class="num green">$45 800</td><td class="num">$172 000</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="grid-3 fade-in" style="margin-top:20px;">
+      <div class="card metric">
+        <div class="metric-value green">$65K</div>
+        <div class="metric-label">Прибыль за 12 мес<br>(реалист, AI-модель)</div>
+      </div>
+      <div class="card metric">
+        <div class="metric-value green">$700K</div>
+        <div class="metric-label">Прибыль за 36 мес<br>(реалист, AI-модель)</div>
+      </div>
+      <div class="card metric">
+        <div class="metric-value">1 700%</div>
+        <div class="metric-label">ROI через 12 мес<br>(реалист)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ========== COSTS ========== -->
+<section>
+  <div class="container fade-in">
+    <h2 class="section-title">Структура расходов</h2>
+    <p class="section-subtitle">AI-команда работает на уже оплаченной подписке Claude Code Max. Расходы = только инфраструктура продукта.</p>
+
+    <div class="card" style="overflow-x:auto;">
+      <table>
+        <tr><th>Статья</th><th>Мес 1</th><th>Мес 3</th><th>Мес 6</th><th>Мес 12</th><th>Мес 18</th></tr>
+        <tr><td>Серверы продукта</td><td class="num">$10</td><td class="num">$30</td><td class="num">$50</td><td class="num">$150</td><td class="num">$300</td></tr>
+        <tr><td>API языковых моделей (для клиентов)</td><td class="num">$5</td><td class="num">$30</td><td class="num">$80</td><td class="num">$250</td><td class="num">$500</td></tr>
+        <tr><td>Каналы связи (SMS, WhatsApp)</td><td class="num">$0</td><td class="num">$10</td><td class="num">$30</td><td class="num">$100</td><td class="num">$200</td></tr>
+        <tr><td>Домен + DNS</td><td class="num">$2</td><td class="num">$2</td><td class="num">$2</td><td class="num">$2</td><td class="num">$2</td></tr>
+        <tr><td>Реклама (с мес 7)</td><td class="num">$0</td><td class="num">$0</td><td class="num">$50</td><td class="num">$200</td><td class="num">$500</td></tr>
+        <tr><td>AI-команда (outreach, контент, поддержка, аналитика)</td><td class="num green">$0</td><td class="num green">$0</td><td class="num green">$0</td><td class="num green">$0</td><td class="num green">$0</td></tr>
+        <tr class="highlight-row"><td><strong>ИТОГО</strong></td><td class="num">$17</td><td class="num">$72</td><td class="num">$212</td><td class="num">$722</td><td class="num">$1 522</td></tr>
+      </table>
+    </div>
+
+    <div class="grid-2" style="margin-top:20px;">
+      <div class="card metric">
+        <div class="metric-value green">$17</div>
+        <div class="metric-label">Вложения в 1 месяц<br>(стоимость старта)</div>
+      </div>
+      <div class="card metric">
+        <div class="metric-value green">Месяц 2</div>
+        <div class="metric-label">Выход в плюс<br>(расходы &lt; выручка)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ========== MVP ========== -->
+<section>
+  <div class="container fade-in">
+    <h2 class="section-title">MVP — 14-21 день</h2>
+    <p class="section-subtitle">7 фич, один канал, минимальная инфраструктура. Разработка через Claude Code /cycle.</p>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>Функционал MVP</h3>
+        <ul style="list-style:none;margin-top:12px;font-size:0.9rem;line-height:2;">
+          <li><span style="color:var(--accent);margin-right:8px;">01</span> Один канал (Telegram / WhatsApp / SMS)</li>
+          <li><span style="color:var(--accent);margin-right:8px;">02</span> AI-диалог (GPT-4o-mini, Function Calling)</li>
+          <li><span style="color:var(--accent);margin-right:8px;">03</span> Запись на услугу (слоты → бронь → подтверждение)</li>
+          <li><span style="color:var(--accent);margin-right:8px;">04</span> Напоминания (за 24ч и за 2ч)</li>
+          <li><span style="color:var(--accent);margin-right:8px;">05</span> Распознавание голосовых (Whisper)</li>
+          <li><span style="color:var(--accent);margin-right:8px;">06</span> Кнопка «переключить на мастера»</li>
+          <li><span style="color:var(--accent);margin-right:8px;">07</span> Дашборд (расписание, записи, лиды)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Технический стек</h3>
+        <table style="margin-top:12px;">
+          <tr><td>Backend</td><td>FastAPI (Python)</td></tr>
+          <tr><td>AI Core</td><td>GPT-4o-mini / Claude Haiku</td></tr>
+          <tr><td>STT</td><td>OpenAI Whisper API</td></tr>
+          <tr><td>База данных</td><td>PostgreSQL (Supabase)</td></tr>
+          <tr><td>Хостинг</td><td>Railway / Fly.io</td></tr>
+          <tr><td>Дашборд</td><td>Next.js / Streamlit</td></tr>
+        </table>
+        <p style="margin-top:16px;text-align:center;font-size:1.3rem;font-weight:700;color:var(--green);">Инфра MVP: $10-50/мес</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ========== SCALING ========== -->
+<section>
+  <div class="container fade-in">
+    <h2 class="section-title">Масштабирование</h2>
+    <p class="section-subtitle">Пошаговая валидация. Каждый этап — с бюджетом, сроком и критерием «прошли / не прошли».</p>
+
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <h4>Этап 0 — Проверка спроса</h4>
+        <p>50 DM мастерам в выбранном канале. Спрашиваем: «Теряете клиентов когда заняты?»</p>
+        <span class="timeline-badge tb-cost">$0</span>
+        <span class="timeline-badge tb-time">2 дня</span>
+        <p style="margin-top:6px;font-size:0.85rem;"><span style="color:var(--red);">&lt;10% «да» → СТОП</span> &nbsp; <span style="color:var(--green);">≥15% «да» → Далее</span></p>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <h4>Этап 1 — Wizard of Oz</h4>
+        <p>Бот + ручные ответы с подсказкой ChatGPT. 3-5 мастеров.</p>
+        <span class="timeline-badge tb-cost">$0-20</span>
+        <span class="timeline-badge tb-time">7 дней</span>
+        <p style="margin-top:6px;font-size:0.85rem;"><span style="color:var(--red);">0 «полезно» → СТОП</span> &nbsp; <span style="color:var(--green);">≥3 «хочу платно» → Далее</span></p>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <h4>Этап 2 — Автоматизированный MVP</h4>
+        <p>Код: AI-агент + один канал + расписание + напоминания. 10-20 мастеров бесплатно.</p>
+        <span class="timeline-badge tb-cost">$50-200</span>
+        <span class="timeline-badge tb-time">14-21 день</span>
+        <p style="margin-top:6px;font-size:0.85rem;"><span style="color:var(--red);">&lt;5 активных → РАЗВОРОТ</span> &nbsp; <span style="color:var(--green);">10+ активных, 5+ платят → Далее</span></p>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <h4>Этап 3 — Запуск продаж</h4>
+        <p>Включаем оплату, контент-маркетинг, реферальная программа.</p>
+        <span class="timeline-badge tb-cost">$200-500</span>
+        <span class="timeline-badge tb-time">30 дней</span>
+        <p style="margin-top:6px;font-size:0.85rem;"><span style="color:var(--red);">&lt;15 платящих → ПИВОТ</span> &nbsp; <span style="color:var(--green);">30+ платящих → Масштаб</span></p>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot green"></div>
+        <h4>Этап 4 — Масштабирование</h4>
+        <p>+второй канал, +смежные ниши, тест платной рекламы.</p>
+        <span class="timeline-badge tb-cost">$500+/мес</span>
+        <span class="timeline-badge tb-time">Месяц 2+</span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:32px;overflow-x:auto;">
+      <h3 style="margin-bottom:12px;font-size:1rem;">Условия масштабирования</h3>
+      <table>
+        <tr><th>Переход</th><th>Условие</th><th>Действие</th></tr>
+        <tr><td>1→2 канала</td><td>50+ платящих</td><td>+WhatsApp / Instagram DM / SMS</td></tr>
+        <tr><td>1→2 ниши</td><td>100+ платящих</td><td>Beauty → wellness / home services</td></tr>
+        <tr><td>1→2 гео</td><td>150+ платящих</td><td>US → UK/LATAM</td></tr>
+        <tr><td>Органика → реклама</td><td>LTV/CAC &gt; 5x</td><td>$50-100/мес тест</td></tr>
+        <tr><td>AI Voice</td><td>200+ платящих</td><td>Подтверждение записей голосом</td></tr>
+        <tr><td>White-label</td><td>500+ мастеров</td><td>Тариф Business $79/мес</td></tr>
+        <tr><td>Marketplace</td><td>1000+ мастеров</td><td>Клиент → AI подбирает мастера</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ========== AI TEAM ========== -->
+<section>
+  <div class="container fade-in">
+    <h2 class="section-title">AI-команда на Claude Code</h2>
+    <p class="section-subtitle">Вся операционка — на AI-агентах. Дополнительные затраты: $0. Уже оплаченная подписка.</p>
+
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-icon">&#x1F4E2;</div>
+        <h3>AI Sales Agent</h3>
+        <p>Парсит Instagram/TikTok, собирает профили мастеров, генерирует персональные DM, отправляет через браузер, ведёт CRM, follow-up.</p>
+        <p style="margin-top:8px;color:var(--green);font-weight:600;">Заменяет: $500-1 500/мес</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">&#x1F3AC;</div>
+        <h3>AI Content Agent</h3>
+        <p>Контент-план, тексты постов, сценарии видео, публикация по расписанию, аналитика реакций.</p>
+        <p style="margin-top:8px;color:var(--green);font-weight:600;">Заменяет: $300-800/мес</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">&#x1F4CA;</div>
+        <h3>AI Analytics Agent</h3>
+        <p>Ежедневные отчёты в Telegram, когорты, LTV, churn-алерты, прогнозы, рекомендации.</p>
+        <p style="margin-top:8px;color:var(--green);font-weight:600;">Заменяет: $1 500-3 000/мес</p>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:16px;">
+      <div class="card">
+        <div class="card-icon">&#x1F6E0;&#xFE0F;</div>
+        <h3>AI Developer Agent</h3>
+        <p>Автоцикл разработки: задачи → код → тесты → деплой. CI/CD, баг-фиксы, новые фичи.</p>
+        <p style="margin-top:8px;color:var(--green);font-weight:600;">Заменяет: $2 000-5 000/мес</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">&#x1F4AC;</div>
+        <h3>AI Support Agent</h3>
+        <p>Встроен в продукт. Чат-бот поддержки, онбординг, NPS-опросы, churn-prevention.</p>
+        <p style="margin-top:8px;color:var(--green);font-weight:600;">Заменяет: $800-2 000/мес</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:24px;text-align:center;border-color:rgba(0,184,148,0.3);">
+      <p style="font-size:1.2rem;font-weight:700;">Экономия на команде: <span style="color:var(--green);">$5 000-12 000/мес</span></p>
+      <p style="color:var(--text-muted);margin-top:4px;">Время основателя: 2-5 часов/неделю (стратегия + утверждение + 1-2 видео)</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ========== RISKS ========== -->
+<section>
+  <div class="container fade-in">
+    <h2 class="section-title">Риски и митигация</h2>
+    <div class="card" style="overflow-x:auto;">
+      <table>
+        <tr><th>Риск</th><th>Вероятность</th><th>Митигация</th></tr>
+        <tr><td>Конкуренты добавят AI</td><td class="num">70%</td><td>Опережать по ширине (omnichannel + любая ниша). Они привязаны к beauty.</td></tr>
+        <tr><td>Смена API каналов</td><td class="num">40%</td><td>Channel-agnostic архитектура. SMS как fallback.</td></tr>
+        <tr><td>AI-галлюцинации</td><td class="num">40%</td><td>Strict Function Calling + проверка слотов + двойное подтверждение.</td></tr>
+        <tr><td>Churn 7-10%/мес</td><td class="num">75%</td><td>Switching cost (история клиентов), рефералы, улучшение AI.</td></tr>
+        <tr><td>Мастера не осознают боль</td><td class="num">60%</td><td>«Аудит пропущенных лидов» — бесплатная неделя, потом статистика.</td></tr>
+        <tr><td>GDPR/CCPA</td><td class="num">30%</td><td>EU-хостинг, data retention, DPA с первого дня.</td></tr>
+      </table>
+    </div>
+
+    <h3 style="margin-top:32px;margin-bottom:16px;font-size:1.1rem;">Kill Criteria — когда остановиться</h3>
+    <div class="grid-2">
+      <div class="card" style="border-color:rgba(214,48,49,0.3);">
+        <p><strong style="color:var(--red);">СТОП</strong> — 48ч discovery: &lt;10% позитивных на всех рынках</p>
+        <p style="margin-top:8px;"><strong style="color:var(--red);">СТОП</strong> — 7 дней Wizard of Oz: 0 мастеров подтвердили ценность</p>
+      </div>
+      <div class="card" style="border-color:rgba(253,203,110,0.3);">
+        <p><strong style="color:var(--yellow);">ПИВОТ</strong> — 30 дней после MVP: &lt;15 платящих</p>
+        <p style="margin-top:8px;"><strong style="color:var(--yellow);">ПИВОТ</strong> — 90 дней: MRR &lt; $1 000</p>
+        <p style="margin-top:8px;"><strong style="color:var(--yellow);">ПИВОТ</strong> — Churn &gt;15%/мес три месяца подряд</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ========== VERDICT ========== -->
+<section>
+  <div class="container fade-in">
+    <div class="verdict-box">
+      <p style="font-size:1rem;color:var(--text-muted);margin-bottom:12px;">Вердикт на основе реалистичного сценария (вероятность 60%)</p>
+      <h2>ДЕЛАТЬ</h2>
+      <p style="font-size:1.1rem;margin-top:16px;max-width:600px;margin-left:auto;margin-right:auto;">
+        Новые вложения: <strong>$17</strong> (первый месяц). Прибыль со 2 месяца.
+        AI-команда на уже оплаченных ресурсах. При провале теряем $100-200.
+        При успехе — <strong>$11 000+/мес</strong> через год при <strong>2-5 ч/нед</strong>.
+      </p>
+      <div class="grid-4" style="margin-top:32px;">
+        <div>
+          <div style="font-size:1.8rem;font-weight:800;color:var(--green);">$65K</div>
+          <div style="color:var(--text-muted);font-size:0.85rem;">прибыль за 12 мес</div>
+        </div>
+        <div>
+          <div style="font-size:1.8rem;font-weight:800;color:var(--green);">$700K</div>
+          <div style="color:var(--text-muted);font-size:0.85rem;">прибыль за 36 мес</div>
+        </div>
+        <div>
+          <div style="font-size:1.8rem;font-weight:800;color:var(--accent);">1 700%</div>
+          <div style="color:var(--text-muted);font-size:0.85rem;">ROI за 12 мес</div>
+        </div>
+        <div>
+          <div style="font-size:1.8rem;font-weight:800;color:var(--accent);">414</div>
+          <div style="color:var(--text-muted);font-size:0.85rem;">клиентов за 12 мес</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>Валидация: 25 февраля 2026 &nbsp;|&nbsp; Совет Моделей: Claude Opus 4.6, GPT-5, Grok 4, Gemini 3 Pro</p>
+    <p>Deep Research: WebSearch + Perplexity sonar-pro + Grok X/Twitter &nbsp;|&nbsp; Score: 72/100</p>
+  </div>
+</footer>
+
+<script>
+// Scroll animations
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+// Chart defaults
+Chart.defaults.color = '#888';
+Chart.defaults.borderColor = 'rgba(45,45,68,0.5)';
+Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+
+const months = ['Мес 1', 'Мес 3', 'Мес 6', 'Мес 12', 'Мес 18', 'Мес 36'];
+
+// Revenue Chart
+new Chart(document.getElementById('revenueChart'), {
+  type: 'line',
+  data: {
+    labels: months,
+    datasets: [
+      { label: 'Пессимист (20%)', data: [190, 646, 1235, 2470, 3705, 6650], borderColor: '#d63031', backgroundColor: 'rgba(214,48,49,0.1)', fill: true, tension: 0.3 },
+      { label: 'Реалист (60%)', data: [435, 1653, 4176, 12006, 20648, 49300], borderColor: '#6c5ce7', backgroundColor: 'rgba(108,92,231,0.1)', fill: true, tension: 0.3, borderWidth: 3 },
+      { label: 'Оптимист (20%)', data: [780, 3705, 10920, 37050, 66300, 175500], borderColor: '#00b894', backgroundColor: 'rgba(0,184,148,0.1)', fill: true, tension: 0.3 }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { position: 'bottom' } },
+    scales: { y: { ticks: { callback: v => '$' + (v >= 1000 ? (v/1000).toFixed(0) + 'K' : v) } } }
+  }
+});
+
+// Profit Chart (AI model)
+new Chart(document.getElementById('profitChart'), {
+  type: 'bar',
+  data: {
+    labels: months,
+    datasets: [
+      { label: 'Пессимист', data: [170, 546, 1023, 2170, 3200, 5650], backgroundColor: 'rgba(214,48,49,0.5)', borderRadius: 4 },
+      { label: 'Реалист', data: [418, 1581, 3964, 11278, 19148, 45800], backgroundColor: 'rgba(108,92,231,0.7)', borderRadius: 4 },
+      { label: 'Оптимист', data: [580, 3505, 10700, 35050, 63800, 172000], backgroundColor: 'rgba(0,184,148,0.5)', borderRadius: 4 }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { position: 'bottom' } },
+    scales: { y: { ticks: { callback: v => '$' + (v >= 1000 ? (v/1000).toFixed(0) + 'K' : v) } } }
+  }
+});
+
+// Cumulative Profit
+new Chart(document.getElementById('cumulativeChart'), {
+  type: 'line',
+  data: {
+    labels: ['Мес 1', 'Мес 2', 'Мес 3', 'Мес 4', 'Мес 5', 'Мес 6', 'Мес 9', 'Мес 12', 'Мес 18', 'Мес 24', 'Мес 36'],
+    datasets: [{
+      label: 'Накопительная прибыль (реалист, AI-модель)',
+      data: [-17, 88, 741, 2381, 5151, 8999, 30000, 65000, 170000, 350000, 700000],
+      borderColor: '#00cec9',
+      backgroundColor: 'rgba(0,206,201,0.15)',
+      fill: true,
+      tension: 0.3,
+      borderWidth: 3,
+      pointBackgroundColor: '#00cec9'
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { position: 'bottom' } },
+    scales: { y: { ticks: { callback: v => '$' + (v >= 1000 ? (v/1000).toFixed(0) + 'K' : v) } } }
+  }
+});
+</script>
+
+</body>
+</html>
